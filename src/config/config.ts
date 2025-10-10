@@ -9,6 +9,9 @@ export const env: string | undefined = process.env.NODE_ENV;
 export const port: string | undefined = process.env.PORT;
 export const config = {
   redis: {
-    url: process.env.REDIS_URL,
+    url: process.env.REDIS_URL || '',
+  },
+  mongodb: {
+    url: process.env.MONGODB_URL || '',
   },
 };
