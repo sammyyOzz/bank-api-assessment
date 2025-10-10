@@ -1,6 +1,7 @@
 import app from './app';
 import { env, port } from './config/config';
+import logger from './utils/logger';
 
 app.listen(port, (): void => {
-  console.log(`[${env}] Listening to port ${port}`);
+  logger.info(`[${env}] Listening to port ${port}`);
 });
