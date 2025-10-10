@@ -3,6 +3,7 @@ import helmet from 'helmet';
 import cors from 'cors';
 import logger from './utils/logger';
 import routes from './routes';
+import errorMiddleware from './middleware/error.middleware';
 
 const app = express();
 
@@ -28,6 +29,6 @@ app.use((req, res) => {
   res.status(404).json({ success: false, message: 'Route not found' });
 });
 
-// app.use(errorMiddleware);
+app.use(errorMiddleware);
 
 export default app;
