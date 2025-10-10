@@ -1,38 +1,33 @@
-import express, { Request, Response, NextFunction } from 'express';
-import { getFromCache, setToCache } from './services/cache';
+import express from 'express';
+import helmet from 'helmet';
+import cors from 'cors';
+import logger from './utils/logger';
+import routes from './routes';
 
 const app = express();
 
-// Middleware function to handle caching
-const cacheMiddleware = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const cacheKey = req.originalUrl;
-    const cachedData = await getFromCache(cacheKey);
+app.use(helmet());
+app.use(cors());
 
-    if (cachedData !== null) {
-      console.log('Retrieved data from Redis cache:', cachedData);
-      return res.send(cachedData);
-    }
-  } catch (error) {
-    console.error('Error accessing Redis cache:', error);
-  }
-  // If data is not found in cache, continue to the next middleware/route
-  return next();
-};
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Apply the cache middleware to specific routes
-app.get('/', cacheMiddleware, async (req: Request, res: Response) => {
-  const homePageMessage = 'Home page is working :)';
-
-  try {
-    // If the control reaches here, it means the data is not found in cache
-    await setToCache(req.originalUrl, homePageMessage);
-    console.log('Set data in Redis cache:', homePageMessage);
-  } catch (error) {
-    console.error('Error accessing Redis cache:', error);
-  } finally {
-    return res.send(homePageMessage);
-  }
+app.use((req, res, next) => {
+  logger.info(`${req.method} ${req.path}`);
+  next();
 });
+
+// health check
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+app.use('/api/v1', routes);
+
+app.use((req, res) => {
+  res.status(404).json({ success: false, message: 'Route not found' });
+});
+
+// app.use(errorMiddleware);
 
 export default app;

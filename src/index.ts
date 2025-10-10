@@ -8,7 +8,7 @@ const server = http.createServer(app);
 
 async function startServer() {
   try {
-    await connectDB();
+    // await connectDB();
 
     server.listen(port, (): void => {
       logger.info(`[${env}] Listening to port ${port}`);
