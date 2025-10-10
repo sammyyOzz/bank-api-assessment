@@ -1,0 +1,23 @@
+openapi: 3.0.3
+servers:
+  - url: https://localhost:{port}
+    description: Local server for development
+    variables:
+      port:
+        enum:
+          - '3000'
+          - '9000'
+        default: '3000'
+info:
+  title: Node.js and Express.js template API documentation
+  version: 0.0.1
+  contact:
+    email: support@example.com
+tags:
+  - name: users
+    description: All paths related to User
+paths:
+  /users:
+    $ref: './paths/users/api-users.yaml'
+  /users/{id}:
+    $ref: './paths/users/api-users-by-id.yaml'
