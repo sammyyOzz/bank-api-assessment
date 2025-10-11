@@ -1,7 +1,8 @@
-import { UserRoles } from './user.types';
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
+import { hashPassword, comparePasswordWithHash } from '../../utils/bcrypt';
+import { IUserDocument, UserRoles } from './user.types';
 
-const userSchema = new mongoose.Schema(
+const userSchema = new Schema<IUserDocument>(
   {
     email: {
       type: String,
@@ -35,11 +36,19 @@ const userSchema = new mongoose.Schema(
       default: true,
     },
   },
-  {
-    timestamps: true,
-  },
+  { timestamps: true },
 );
 
-const User = mongoose.model('User', userSchema);
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) return next();
+  this.password = await hashPassword(this.password);
+  next();
+});
+
+userSchema.methods.comparePassword = async function (password: string) {
+  return await comparePasswordWithHash(password, this.password);
+};
+
+const User = mongoose.model<IUserDocument>('User', userSchema);
 
 export default User;
