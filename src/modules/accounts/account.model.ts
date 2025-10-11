@@ -1,7 +1,8 @@
-import mongoose from 'mongoose';
-import { AccountStatus } from './account.types';
+import mongoose, { Schema } from 'mongoose';
+import { AccountStatus, IAccountDocument } from './account.types';
+import { generateAccountNumber } from '../../utils/generate-account';
 
-const accountSchema = new mongoose.Schema(
+const accountSchema = new Schema<IAccountDocument>(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -37,6 +38,13 @@ const accountSchema = new mongoose.Schema(
   },
 );
 
-const Account = mongoose.model('Account', accountSchema);
+accountSchema.pre('save', async function (next) {
+  if (!this.accountNumber) {
+    this.accountNumber = generateAccountNumber();
+  }
+  next();
+});
+
+const Account = mongoose.model<IAccountDocument>('Account', accountSchema);
 
 export default Account;
