@@ -1,6 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
 import { AccountStatus, IAccountDocument } from './account.types';
-import { generateAccountNumber } from '../../utils/generate-account';
 
 const accountSchema = new Schema<IAccountDocument>(
   {
@@ -37,13 +36,6 @@ const accountSchema = new Schema<IAccountDocument>(
     timestamps: true,
   },
 );
-
-accountSchema.pre('save', async function (next) {
-  if (!this.accountNumber) {
-    this.accountNumber = generateAccountNumber();
-  }
-  next();
-});
 
 const Account = mongoose.model<IAccountDocument>('Account', accountSchema);
 

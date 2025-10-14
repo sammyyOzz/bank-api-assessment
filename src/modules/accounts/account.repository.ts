@@ -1,10 +1,14 @@
+import { generateAccountNumber } from '../../utils/generate-account';
 import Account from './account.model';
 import { IAccount, IAccountDocument } from './account.types';
 import { FilterQuery, UpdateQuery } from 'mongoose';
 
 class AccountRepository {
-  async create(accountData: Partial<IAccount>): Promise<IAccountDocument> {
-    const account = new Account(accountData);
+  async create(data: Partial<IAccount>): Promise<IAccountDocument> {
+    if (!data.accountNumber) {
+      data.accountNumber = generateAccountNumber();
+    }
+    const account = new Account(data);
     return await account.save();
   }
 
@@ -26,12 +30,12 @@ class AccountRepository {
     return await Account.find(filter);
   }
 
-  async updateById(
-    id: string,
-    updateData: UpdateQuery<IAccountDocument>,
-  ): Promise<IAccountDocument | null> {
-    return await Account.findByIdAndUpdate(id, updateData, { new: true });
-  }
+  // async updateById(
+  //   id: string,
+  //   updateData: UpdateQuery<IAccountDocument>,
+  // ): Promise<IAccountDocument | null> {
+  //   return await Account.findByIdAndUpdate(id, updateData, { new: true });
+  // }
 
   async deleteById(id: string): Promise<IAccountDocument | null> {
     return await Account.findByIdAndDelete(id);

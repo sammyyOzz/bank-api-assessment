@@ -1,9 +1,10 @@
 import tokenManager from '../../utils/token-manager';
 import ApiError from '../../utils/api-error';
-import redisService from '../../services/redis.service';
+// import redisService from '../../services/redis.service';
 import { IUser } from '../users/user.types';
 import userRepository from '../users/user.repository';
 import { accountRepository } from '../accounts/account.repository';
+import { omit } from '../../utils/omit';
 
 class AuthService {
   async signup(userData: Partial<IUser>) {
@@ -26,20 +27,22 @@ class AuthService {
       user.role,
     );
 
-    await redisService.setRefreshToken(
-      String(user._id),
-      refreshToken,
-      tokenManager.getRefreshTokenTTL(),
-    );
+    // await redisService.setRefreshToken(
+    //   String(user._id),
+    //   refreshToken,
+    //   tokenManager.getRefreshTokenTTL(),
+    // );
+
+    const safeUser = omit(user.toObject(), ['password', '__v']);
 
     return {
-      user,
+      user: safeUser,
       account,
       tokens: { accessToken, refreshToken },
     };
   }
 
-  async signin(email: string, password: string) {
+  async login(email: string, password: string) {
     const user = await userRepository.findByEmail(email);
     if (!user || !user.isActive) {
       throw ApiError.unauthorized('Invalid credentials');
@@ -56,14 +59,16 @@ class AuthService {
       user.role,
     );
 
-    await redisService.setRefreshToken(
-      String(user._id),
-      refreshToken,
-      tokenManager.getRefreshTokenTTL(),
-    );
+    // await redisService.setRefreshToken(
+    //   String(user._id),
+    //   refreshToken,
+    //   tokenManager.getRefreshTokenTTL(),
+    // );
+
+    const safeUser = omit(user.toObject(), ['password', '__v']);
 
     return {
-      user,
+      user: safeUser,
       tokens: { accessToken, refreshToken },
     };
   }
@@ -75,10 +80,10 @@ class AuthService {
       role: string;
     };
 
-    const storedToken = await redisService.getRefreshToken(decoded.userId);
-    if (!storedToken || storedToken !== oldRefreshToken) {
-      throw ApiError.unauthorized('Invalid refresh token');
-    }
+    // const storedToken = await redisService.getRefreshToken(decoded.userId);
+    // if (!storedToken || storedToken !== oldRefreshToken) {
+    //   throw ApiError.unauthorized('Invalid refresh token');
+    // }
 
     const user = await userRepository.findById(decoded.userId);
     if (!user || !user.isActive) {
@@ -91,17 +96,17 @@ class AuthService {
       user.role,
     );
 
-    await redisService.setRefreshToken(
-      String(user._id),
-      refreshToken,
-      tokenManager.getRefreshTokenTTL(),
-    );
+    // await redisService.setRefreshToken(
+    //   String(user._id),
+    //   refreshToken,
+    //   tokenManager.getRefreshTokenTTL(),
+    // );
 
     return { accessToken, refreshToken };
   }
 
   async logout(userId: string): Promise<void> {
-    await redisService.deleteRefreshToken(userId);
+    // await redisService.deleteRefreshToken(userId);
   }
 }
 

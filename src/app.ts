@@ -23,7 +23,7 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-app.use('/api/v1', routes);
+app.use('/api', routes);
 
 app.use((req, res) => {
   res.status(404).json({ success: false, message: 'Route not found' });
