@@ -13,6 +13,26 @@ class TransactionController {
     });
   });
 
+  withdrawFunds = asyncHandler(async (req: Request, res: Response) => {
+    const transaction = await transactionService.withdrawFunds(req.user!.userId, req.body);
+
+    res.status(201).json({
+      success: true,
+      message: 'Withdrawal completed successfully',
+      data: { transaction },
+    });
+  });
+
+  depositFunds = asyncHandler(async (req: Request, res: Response) => {
+    const transaction = await transactionService.depositFunds(req.user!.userId, req.body);
+
+    res.status(201).json({
+      success: true,
+      message: 'Deposit completed successfully',
+      data: { transaction },
+    });
+  });
+
   getMyTransactions = asyncHandler(async (req: Request, res: Response) => {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;

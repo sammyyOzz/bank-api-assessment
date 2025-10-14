@@ -1,12 +1,12 @@
 import Joi from 'joi';
 
-export const initiateTransactionSchema = Joi.object({
-  toAccountNumber: Joi.string()
+const baseTransactionSchema = Joi.object({
+  accountNumber: Joi.string()
     .required()
     .trim()
     .pattern(/^[0-9]+$/)
     .messages({
-      'string.empty': 'Recipient account number is required',
+      'string.empty': 'Account number is required',
       'string.pattern.base': 'Account number must contain only digits',
     }),
 
@@ -19,4 +19,18 @@ export const initiateTransactionSchema = Joi.object({
   description: Joi.string().max(200).allow('', null).messages({
     'string.max': 'Description must not exceed 200 characters',
   }),
+});
+
+export const depositFundsSchema = baseTransactionSchema;
+
+export const withdrawFundsSchema = baseTransactionSchema;
+
+export const transferFundsSchema = baseTransactionSchema.keys({
+  accountNumber: Joi.forbidden(), // disables it
+  fromAccountNumber: Joi.string()
+    .required()
+    .pattern(/^[0-9]+$/),
+  toAccountNumber: Joi.string()
+    .required()
+    .pattern(/^[0-9]+$/),
 });
