@@ -1,4 +1,4 @@
-import { generateAccountNumber } from '../../utils/generate-account';
+import { accountNumberGenerator } from '../../utils/number-generator';
 import Account from './account.model';
 import { IAccount, IAccountDocument } from './account.types';
 import { FilterQuery, UpdateQuery } from 'mongoose';
@@ -6,7 +6,7 @@ import { FilterQuery, UpdateQuery } from 'mongoose';
 class AccountRepository {
   async create(data: Partial<IAccount>): Promise<IAccountDocument> {
     if (!data.accountNumber) {
-      data.accountNumber = generateAccountNumber();
+      data.accountNumber = accountNumberGenerator.generate();
     }
     const account = new Account(data);
     return await account.save();
