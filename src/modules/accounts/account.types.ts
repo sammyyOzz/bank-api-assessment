@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { IBaseDocument } from '../../types/mongoose.types';
 
 export enum AccountStatus {
   ACTIVE = 'active',
@@ -15,4 +16,4 @@ export interface IAccount {
   status: AccountStatus;
 }
 
-export interface IAccountDocument extends IAccount, Document {}
+export interface IAccountDocument extends IAccount, IBaseDocument {}

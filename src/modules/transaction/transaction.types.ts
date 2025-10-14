@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { IBaseDocument } from '../../types/mongoose.types';
 
 export enum TransactionStatus {
   PENDING = 'pending',
@@ -23,7 +24,7 @@ export interface ITransaction {
   description?: string;
   status: TransactionStatus;
   initiatedBy: string | mongoose.Schema.Types.ObjectId;
-  transactionReference: string;
+  transactionReference?: string;
 }
 
-export interface ITransactionDocument extends ITransaction, Document {}
+export interface ITransactionDocument extends ITransaction, IBaseDocument {}

@@ -50,8 +50,6 @@ const transactionSchema = new Schema<ITransactionDocument>(
   },
 );
 
-transactionSchema.index({ transactionReference: 1 }, { unique: true });
-
 transactionSchema.pre('save', function (next) {
   if (!this.transactionReference) {
     this.transactionReference = transactionRefGenerator.generate();
