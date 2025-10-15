@@ -7,6 +7,7 @@ dotenv.config({
 
 export const env = process.env.NODE_ENV || 'development';
 export const port = process.env.PORT || '5000';
+export const host = process.env.HOST || 'localhost';
 
 export const config = {
   redis: {

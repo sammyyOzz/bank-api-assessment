@@ -242,6 +242,7 @@ Example .env:
 ```bash
 PORT=5000
 MONGODB_URL=mongodb://localhost:27017/bankdb
+HOST=localhost
 
 JWT_SECRET=someSuperSecretKey
 JWT_ACCESS_EXPIRATION=30m
