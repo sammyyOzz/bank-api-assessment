@@ -1,4 +1,8 @@
-# 🏦 Bank API
+# 🔢 Test 1: FizzBuzz
+
+The implementation for the FizzBuzz function can be found in [`test-1-fizzbuzz.ts`](./test-1-fizzbuzz.ts).
+
+# 🏦 TEST 2: Bank API
 
 A modular, scalable, and secure **Banking API** built with **Node.js**, **Express**, and **TypeScript**.  
 This project follows clean architecture principles and focuses on **maintainability**, **security**, and **performance**.
