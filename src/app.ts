@@ -4,6 +4,8 @@ import cors from 'cors';
 import logger from './utils/logger';
 import routes from './routes';
 import errorMiddleware from './middleware/error.middleware';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from './config/swagger';
 
 const app = express();
 
@@ -21,6 +23,22 @@ app.use((req, res, next) => {
 // health check
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// Swagger documentation
+app.use(
+  '/api-docs',
+  swaggerUi.serve as unknown as express.RequestHandler[],
+  swaggerUi.setup(swaggerSpec, {
+    customCss: '.swagger-ui .topbar { display: none }',
+    customSiteTitle: 'Bank API Docs',
+  }) as unknown as express.RequestHandler,
+);
+
+// Swagger JSON endpoint
+app.get('/api-docs.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
 });
 
 app.use('/api', routes);
