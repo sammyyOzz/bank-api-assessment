@@ -1,12 +1,7 @@
+import { IFindOptions } from '../../types/pagination.types';
 import Transaction from './transaction.model';
 import { ITransaction, ITransactionDocument, TransactionStatus } from './transaction.types';
 import { FilterQuery } from 'mongoose';
-
-interface FindOptions {
-  skip?: number;
-  limit?: number;
-  sort?: Record<string, 1 | -1>;
-}
 
 class TransactionRepository {
   async createTransaction(data: ITransaction): Promise<ITransactionDocument> {
@@ -26,7 +21,7 @@ class TransactionRepository {
     return await Transaction.findOne(filter).exec();
   }
 
-  async findAll(filter: any = {}, options: FindOptions = {}): Promise<any[]> {
+  async findAll(filter: any = {}, options: IFindOptions = {}): Promise<any[]> {
     const { skip = 0, limit, sort = { createdAt: -1 } } = options;
 
     let query = Transaction.find(filter).sort(sort);

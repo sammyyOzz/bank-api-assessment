@@ -14,10 +14,6 @@ class UserRepository {
     return await User.findById(userId);
   }
 
-  // async updateUser(userId: string, updateData: Partial<IUser>): Promise<IUserDocument | null> {
-  //   return await User.findOneAndUpdate({ _id: userId }, updateData, { new: true });
-  // }
-
   async deleteUser(userId: string): Promise<IUserDocument | null> {
     return await User.findByIdAndDelete(userId);
   }
@@ -25,10 +21,6 @@ class UserRepository {
   async getAllUsers(): Promise<IUserDocument[]> {
     return await User.find();
   }
-
-  // async setActiveStatus(userId: string, isActive: boolean): Promise<IUserDocument | null> {
-  //   return await User.findByIdAndUpdate(userId, { isActive }, { new: true });
-  // }
 }
 
 export const userRepository = new UserRepository();

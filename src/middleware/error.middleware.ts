@@ -1,6 +1,7 @@
 import logger from '../utils/logger';
 import ApiError from '../utils/api-error';
 import type { Request as ExpressRequest, Response as ExpressResponse } from 'express';
+import { env } from '../config/config';
 
 const errorMiddleware = (
   err: Error,
@@ -58,7 +59,7 @@ const errorMiddleware = (
   res.status(statusCode).json({
     success: false,
     message,
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
+    ...(env === 'development' && { stack: err.stack }),
   });
 };
 
