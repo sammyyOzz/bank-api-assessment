@@ -6,8 +6,24 @@ import ApiError from '../../utils/api-error';
 import { AccountStatus } from '../accounts/account.types';
 import { IPaginationParams } from '../../types/pagination.types';
 import { PaginationHelper } from '../../utils/pagination';
+import redisService from '../../services/redis.service';
+import { CACHE_TTL } from '../../config/constants';
+import logger from '../../utils/logger';
 
 class TransactionService {
+  private getCacheKey(type: 'user' | 'all', ...params: any[]): string {
+    return `transaction:${type}:${params.join(':')}`;
+  }
+
+  private async invalidateUserCache(userId: string): Promise<void> {
+    try {
+      await redisService.deletePattern(`transaction:user:${userId}:*`);
+      await redisService.deletePattern(`transaction:all:*`);
+    } catch (error) {
+      logger.error('Cache invalidation error:', error);
+    }
+  }
+
   async initiateTransfer(
     userId: string,
     transferData: {
@@ -75,6 +91,11 @@ class TransactionService {
 
       await session.commitTransaction();
 
+      await Promise.all([
+        this.invalidateUserCache(userId),
+        this.invalidateUserCache(toAccount.userId.toString()),
+      ]);
+
       return await transactionRepository.findById(transaction._id.toString());
     } catch (error) {
       await session.abortTransaction();
@@ -128,6 +149,8 @@ class TransactionService {
 
       await session.commitTransaction();
 
+      await this.invalidateUserCache(userId);
+
       return await transactionRepository.findById(transaction._id.toString());
     } catch (error) {
       await session.abortTransaction();
@@ -173,6 +196,8 @@ class TransactionService {
 
       await session.commitTransaction();
 
+      await this.invalidateUserCache(userId);
+
       return await transactionRepository.findById(transaction._id.toString());
     } catch (error) {
       await session.abortTransaction();
@@ -190,21 +215,41 @@ class TransactionService {
 
     const { page, limit, skip } = PaginationHelper.validateAndNormalize(params);
 
+    const cacheKey = this.getCacheKey('user', userId, page, limit);
+
+    const cached = await redisService.get(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     const filter = {
       $or: [{ fromAccountId: account._id }, { toAccountId: account._id }],
     };
 
     const { data, total } = await transactionRepository.findPaginated(filter, skip, limit);
+    const response = PaginationHelper.formatResponse(data, page, limit, total);
 
-    return PaginationHelper.formatResponse(data, page, limit, total);
+    await redisService.set(cacheKey, response, CACHE_TTL.LIST_DATA);
+
+    return response;
   }
 
   async getAllTransactions(params: IPaginationParams) {
     const { page, limit, skip } = PaginationHelper.validateAndNormalize(params);
 
-    const { data, total } = await transactionRepository.findPaginated({}, skip, limit);
+    const cacheKey = this.getCacheKey('all', page, limit);
 
-    return PaginationHelper.formatResponse(data, page, limit, total);
+    const cached = await redisService.get(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
+    const { data, total } = await transactionRepository.findPaginated({}, skip, limit);
+    const response = PaginationHelper.formatResponse(data, page, limit, total);
+
+    await redisService.set(cacheKey, response, CACHE_TTL.LIST_DATA);
+
+    return response;
   }
 }
 
