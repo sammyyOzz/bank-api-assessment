@@ -7,17 +7,18 @@ WORKDIR /app
 # Copy package.json and yarn.lock
 COPY package.json yarn.lock ./
 
-# Install production dependencies only
-RUN yarn install --frozen-lockfile --production=false
+# Install all dependencies (including devDependencies for build)
+RUN yarn install --frozen-lockfile
 
-# Copy the rest of the application code
-COPY . .
+# Copy tsconfig and source code
+COPY tsconfig.json ./
+COPY src ./src
 
-# Build TypeScript
+# Build TypeScript to JavaScript
 RUN yarn build
 
-# Remove dev dependencies
-RUN yarn install --frozen-lockfile --production=true && yarn cache clean
+# Remove devDependencies after build
+RUN yarn install --frozen-lockfile --production && yarn cache clean
 
 # Expose the port
 EXPOSE 5000

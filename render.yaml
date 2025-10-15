@@ -18,21 +18,13 @@ services:
         value: 30m
       - key: JWT_REFRESH_EXPIRATION
         value: 7d
-      - key: REDIS_HOST
+      - key: REDIS_URL
         fromService:
           type: redis
           name: bank-api-redis
-          property: host
-      - key: REDIS_PORT
-        fromService:
-          type: redis
-          name: bank-api-redis
-          property: port
-      - key: REDIS_PASSWORD
-        value: ''
+          property: connectionString
     healthCheckPath: /health
 
-  # Redis instance
   - type: redis
     name: bank-api-redis
     plan: free
