@@ -162,17 +162,17 @@ The architecture makes testing straightforward:
 
 ## 🧱 Technologies Used
 
-| Category       | Technology         |
-| -------------- | ------------------ |
-| Language       | TypeScript         |
-| Framework      | Express.js         |
-| Database       | MongoDB            |
-| Caching        | Redis              |
-| Validation     | Joi                |
-| Authentication | JWT                |
-| Logging        | Winston            |
-| Documentation  | Swagger            |
-| Deployment     | Docker-ready setup |
+| Category       | Technology |
+| -------------- | ---------- |
+| Language       | TypeScript |
+| Framework      | Express.js |
+| Database       | MongoDB    |
+| Caching        | Redis      |
+| Validation     | Joi        |
+| Authentication | JWT        |
+| Logging        | Winston    |
+| Documentation  | Swagger    |
+| Deployment     | Docker     |
 
 ---
 
@@ -196,13 +196,13 @@ The architecture makes testing straightforward:
 - ⚡ Redis caching layer
 - 📚 Swagger documentation
 - 🚨 Centralized error handling
+- 🐳 Deployment using Docker
 
 ---
 
 ## 🧭 Future Improvements
 
-- Add unit and integration tests (e.g., Jest or Mocha)
-- Implement Docker Compose for full containerization
+- Add unit and integration tests (e.g. Jest)
 - Add CI/CD pipeline for testing and deployment
 - Enhance audit logging for compliance and debugging
 

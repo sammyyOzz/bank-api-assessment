@@ -1,0 +1,40 @@
+services:
+  - type: web
+    name: bank-api
+    env: docker
+    region: oregon
+    plan: free
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: MONGODB_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_ACCESS_EXPIRATION
+        value: 30m
+      - key: JWT_REFRESH_EXPIRATION
+        value: 7d
+      - key: REDIS_HOST
+        fromService:
+          type: redis
+          name: bank-api-redis
+          property: host
+      - key: REDIS_PORT
+        fromService:
+          type: redis
+          name: bank-api-redis
+          property: port
+      - key: REDIS_PASSWORD
+        value: ''
+    healthCheckPath: /health
+
+  # Redis instance
+  - type: redis
+    name: bank-api-redis
+    plan: free
+    maxmemoryPolicy: allkeys-lru
+    ipAllowList: []
