@@ -1,5 +1,5 @@
 {
-  "name": "nodejs-express-template",
+  "name": "bank-api",
   "version": "1.0.0",
   "main": "src/index.ts",
   "repository": "",
