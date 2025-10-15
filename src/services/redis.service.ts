@@ -3,20 +3,24 @@ import { getRedisClient } from '../config/redis';
 import logger from '../utils/logger';
 
 class RedisService {
-  private client: RedisClientType;
+  private client: RedisClientType | null = null;
 
-  constructor() {
-    this.client = getRedisClient();
+  private getClient(): RedisClientType {
+    if (!this.client) {
+      this.client = getRedisClient();
+    }
+    return this.client;
   }
 
   async set(key: string, value: any, ttl?: number): Promise<void> {
     try {
       const stringValue = typeof value === 'object' ? JSON.stringify(value) : String(value);
+      const client = this.getClient();
 
       if (ttl) {
-        await this.client.setEx(key, ttl, stringValue);
+        await client.setEx(key, ttl, stringValue);
       } else {
-        await this.client.set(key, stringValue);
+        await client.set(key, stringValue);
       }
     } catch (error) {
       logger.error('Redis SET error:', error);
@@ -26,7 +30,9 @@ class RedisService {
 
   async get<T = any>(key: string): Promise<T | string | null> {
     try {
-      const value = await this.client.get(key);
+      const client = this.getClient();
+      const value = await client.get(key);
+
       if (!value) return null;
 
       try {
@@ -42,7 +48,8 @@ class RedisService {
 
   async delete(key: string): Promise<void> {
     try {
-      await this.client.del(key);
+      const client = this.getClient();
+      await client.del(key);
     } catch (error) {
       logger.error('Redis DELETE error:', error);
       throw error;
@@ -51,7 +58,8 @@ class RedisService {
 
   async exists(key: string): Promise<boolean> {
     try {
-      const result = await this.client.exists(key);
+      const client = this.getClient();
+      const result = await client.exists(key);
       return result === 1;
     } catch (error) {
       logger.error('Redis EXISTS error:', error);
@@ -72,6 +80,20 @@ class RedisService {
   async deleteRefreshToken(userId: string): Promise<void> {
     const key = `refresh_token:${userId}`;
     await this.delete(key);
+  }
+
+  async deletePattern(pattern: string): Promise<void> {
+    try {
+      const client = this.getClient();
+      const keys = await client.keys(pattern);
+
+      if (keys.length > 0) {
+        await client.del(keys);
+      }
+    } catch (error) {
+      logger.error('Redis DELETE PATTERN error:', error);
+      throw error;
+    }
   }
 }
 

@@ -1,7 +1,7 @@
 import app from './app';
 import { env, port } from './config/config';
 import { connectDB } from './config/database';
-// import { connectRedis } from './config/redis';
+import { connectRedis } from './config/redis';
 import logger from './utils/logger';
 import http from 'http';
 
@@ -11,7 +11,7 @@ async function startServer() {
   try {
     await connectDB();
 
-    // await connectRedis();
+    await connectRedis();
 
     server.listen(port, (): void => {
       logger.info(`[${env}] Listening to port ${port}`);
