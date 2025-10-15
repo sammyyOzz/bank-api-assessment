@@ -4,6 +4,8 @@ import { TransactionStatus, TransactionType } from './transaction.types';
 import { accountRepository } from '../accounts/account.repository';
 import ApiError from '../../utils/api-error';
 import { AccountStatus } from '../accounts/account.types';
+import { IPaginationParams } from '../../types/pagination.types';
+import { PaginationHelper } from '../../utils/pagination';
 
 class TransactionService {
   async initiateTransfer(
@@ -180,51 +182,29 @@ class TransactionService {
     }
   }
 
-  async getMyTransactions(userId: string, page = 1, limit = 10) {
+  async getMyTransactions(userId: string, params: IPaginationParams) {
     const account = await accountRepository.findByUserId(userId);
     if (!account) {
       throw ApiError.notFound('Account not found');
     }
 
-    const skip = (page - 1) * limit;
+    const { page, limit, skip } = PaginationHelper.validateAndNormalize(params);
 
     const filter = {
       $or: [{ fromAccountId: account._id }, { toAccountId: account._id }],
     };
 
-    const [transactions, total] = await Promise.all([
-      transactionRepository.findAll(filter).then((all) => all.slice(skip, skip + limit)),
-      transactionRepository.count(filter),
-    ]);
+    const { data, total } = await transactionRepository.findPaginated(filter, skip, limit);
 
-    return {
-      transactions,
-      pagination: {
-        page,
-        limit,
-        total,
-        pages: Math.ceil(total / limit),
-      },
-    };
+    return PaginationHelper.formatResponse(data, page, limit, total);
   }
 
-  async getAllTransactions(page = 1, limit = 10) {
-    const skip = (page - 1) * limit;
+  async getAllTransactions(params: IPaginationParams) {
+    const { page, limit, skip } = PaginationHelper.validateAndNormalize(params);
 
-    const [transactions, total] = await Promise.all([
-      transactionRepository.findAll().then((all) => all.slice(skip, skip + limit)),
-      transactionRepository.count(),
-    ]);
+    const { data, total } = await transactionRepository.findPaginated({}, skip, limit);
 
-    return {
-      transactions,
-      pagination: {
-        page,
-        limit,
-        total,
-        pages: Math.ceil(total / limit),
-      },
-    };
+    return PaginationHelper.formatResponse(data, page, limit, total);
   }
 }
 

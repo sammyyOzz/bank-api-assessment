@@ -1,6 +1,12 @@
 import Transaction from './transaction.model';
 import { ITransaction, ITransactionDocument, TransactionStatus } from './transaction.types';
-import { FilterQuery, UpdateQuery } from 'mongoose';
+import { FilterQuery } from 'mongoose';
+
+interface FindOptions {
+  skip?: number;
+  limit?: number;
+  sort?: Record<string, 1 | -1>;
+}
 
 class TransactionRepository {
   async createTransaction(data: ITransaction): Promise<ITransactionDocument> {
@@ -20,25 +26,21 @@ class TransactionRepository {
     return await Transaction.findOne(filter).exec();
   }
 
-  async findAll(filter: FilterQuery<ITransactionDocument> = {}): Promise<ITransactionDocument[]> {
-    return await Transaction.find(filter)
-      .sort({ createdAt: -1 })
-      .populate('fromAccountId')
-      .populate('toAccountId')
-      .populate('initiatedBy')
+  async findAll(filter: any = {}, options: FindOptions = {}): Promise<any[]> {
+    const { skip = 0, limit, sort = { createdAt: -1 } } = options;
+
+    let query = Transaction.find(filter).sort(sort);
+
+    if (skip) query = query.skip(skip);
+    if (limit) query = query.limit(limit);
+
+    return await query
+      .populate('fromAccountId', 'accountNumber accountName')
+      .populate('toAccountId', 'accountNumber accountName')
+      .populate('initiatedBy', 'firstName lastName email')
+      .lean()
       .exec();
   }
-
-  // async updateTransaction(
-  //   id: string,
-  //   update: UpdateQuery<ITransactionDocument>
-  // ): Promise<ITransactionDocument | null> {
-  //   return await Transaction.findByIdAndUpdate(id, update, { new: true }).exec();
-  // }
-
-  // async updateStatus(id: string, status: TransactionStatus): Promise<ITransactionDocument | null> {
-  //   return await this.updateTransaction(id, { status });
-  // }
 
   async deleteById(id: string): Promise<ITransactionDocument | null> {
     return await Transaction.findByIdAndDelete(id).exec();
@@ -48,8 +50,19 @@ class TransactionRepository {
     return await Transaction.findOne({ transactionReference: reference }).exec();
   }
 
-  async count(filter: FilterQuery<ITransactionDocument> = {}): Promise<number> {
+  async count(filter: any = {}): Promise<number> {
     return await Transaction.countDocuments(filter).exec();
+  }
+
+  async findPaginated(
+    filter: any,
+    skip: number,
+    limit: number,
+  ): Promise<{ data: any[]; total: number }> {
+    const data = await this.findAll(filter, { skip, limit, sort: { createdAt: -1 } });
+    const total = await this.count(filter);
+
+    return { data, total };
   }
 }
 

@@ -37,7 +37,7 @@ class TransactionController {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
 
-    const result = await transactionService.getMyTransactions(req.user!.userId, page, limit);
+    const result = await transactionService.getMyTransactions(req.user!.userId, { page, limit });
 
     res.status(200).json({
       success: true,
@@ -49,7 +49,7 @@ class TransactionController {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
 
-    const result = await transactionService.getAllTransactions(page, limit);
+    const result = await transactionService.getAllTransactions({ page, limit });
 
     res.status(200).json({
       success: true,
