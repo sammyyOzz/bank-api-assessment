@@ -26,10 +26,15 @@ export const authenticate = (
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw ApiError.unauthorized('No token provided');
+      return next(ApiError.unauthorized('No token provided'));
     }
 
     const token = authHeader.split(' ')[1];
+
+    if (!token) {
+      return next(ApiError.unauthorized('No token provided'));
+    }
+
     const decoded = tokenManager.verifyToken(token) as AuthenticatedUser;
 
     req.user = {
@@ -40,9 +45,16 @@ export const authenticate = (
 
     next();
   } catch (error: any) {
+    if (error.name === 'TokenExpiredError') {
+      return next(ApiError.unauthorized('Token expired'));
+    }
+    if (error.name === 'JsonWebTokenError') {
+      return next(ApiError.unauthorized('Invalid token'));
+    }
     if (error.message === 'Invalid or expired token') {
       return next(ApiError.unauthorized('Invalid or expired token'));
     }
-    next(error);
+
+    return next(error);
   }
 };
