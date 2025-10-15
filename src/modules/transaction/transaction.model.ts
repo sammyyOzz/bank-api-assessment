@@ -4,11 +4,11 @@ import { transactionRefGenerator } from '../../utils/number-generator';
 
 const transactionSchema = new Schema<ITransactionDocument>(
   {
-    fromAccountId: {
+    fromAccount: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Account',
     },
-    toAccountId: {
+    toAccount: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Account',
     },

@@ -130,11 +130,11 @@ const options: swaggerJsdoc.Options = {
               type: 'string',
               example: '507f1f77bcf86cd799439011',
             },
-            fromAccountId: {
+            fromAccount: {
               type: 'string',
               example: '507f1f77bcf86cd799439011',
             },
-            toAccountId: {
+            toAccount: {
               type: 'string',
               example: '507f1f77bcf86cd799439012',
             },

@@ -16,8 +16,8 @@ export enum TransactionType {
 }
 
 export interface ITransaction {
-  fromAccountId?: string | mongoose.Schema.Types.ObjectId;
-  toAccountId?: string | mongoose.Schema.Types.ObjectId;
+  fromAccount?: string | mongoose.Schema.Types.ObjectId;
+  toAccount?: string | mongoose.Schema.Types.ObjectId;
   type: TransactionType;
   amount: number;
   currency: string;

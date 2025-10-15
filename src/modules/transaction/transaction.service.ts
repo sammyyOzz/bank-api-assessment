@@ -79,8 +79,8 @@ class TransactionService {
       await Promise.all([fromAccount.save({ session }), toAccount.save({ session })]);
 
       const transaction = await transactionRepository.createTransaction({
-        fromAccountId: String(fromAccount._id),
-        toAccountId: String(toAccount._id),
+        fromAccount: String(fromAccount._id),
+        toAccount: String(toAccount._id),
         type: TransactionType.TRANSFER,
         amount: transferData.amount,
         currency: fromAccount.currency,
@@ -138,7 +138,7 @@ class TransactionService {
       await account.save({ session });
 
       const transaction = await transactionRepository.createTransaction({
-        fromAccountId: String(account._id),
+        fromAccount: String(account._id),
         type: TransactionType.WITHDRAWAL,
         amount: withdrawalData.amount,
         currency: account.currency,
@@ -185,7 +185,7 @@ class TransactionService {
       await account.save({ session });
 
       const transaction = await transactionRepository.createTransaction({
-        toAccountId: String(account._id),
+        toAccount: String(account._id),
         type: TransactionType.DEPOSIT,
         amount: depositData.amount,
         currency: account.currency,
@@ -223,7 +223,7 @@ class TransactionService {
     }
 
     const filter = {
-      $or: [{ fromAccountId: account._id }, { toAccountId: account._id }],
+      $or: [{ fromAccount: account._id }, { toAccount: account._id }],
     };
 
     const { data, total } = await transactionRepository.findPaginated(filter, skip, limit);

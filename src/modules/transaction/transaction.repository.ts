@@ -11,8 +11,8 @@ class TransactionRepository {
 
   async findById(id: string): Promise<ITransactionDocument | null> {
     return await Transaction.findById(id)
-      .populate('fromAccountId')
-      .populate('toAccountId')
+      .populate('fromAccount')
+      .populate('toAccount')
       .populate('initiatedBy')
       .exec();
   }
@@ -30,8 +30,8 @@ class TransactionRepository {
     if (limit) query = query.limit(limit);
 
     return await query
-      .populate('fromAccountId', 'accountNumber accountName')
-      .populate('toAccountId', 'accountNumber accountName')
+      .populate('fromAccount', 'accountNumber accountName')
+      .populate('toAccount', 'accountNumber accountName')
       .populate('initiatedBy', 'firstName lastName email')
       .lean()
       .exec();
