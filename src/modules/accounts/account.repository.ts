@@ -33,13 +33,6 @@ class AccountRepository {
     return await Account.find(filter);
   }
 
-  // async updateById(
-  //   id: string,
-  //   updateData: UpdateQuery<IAccountDocument>,
-  // ): Promise<IAccountDocument | null> {
-  //   return await Account.findByIdAndUpdate(id, updateData, { new: true });
-  // }
-
   async deleteById(id: string): Promise<IAccountDocument | null> {
     return await Account.findByIdAndDelete(id);
   }
