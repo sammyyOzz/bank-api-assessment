@@ -6,7 +6,7 @@ const router = Router();
 
 /**
  * @swagger
- * /v1/accounts:
+ * /v1/accounts/me:
  *   get:
  *     summary: Retrieve all accounts belonging to the authenticated user
  *     tags: [Accounts]
@@ -40,6 +40,6 @@ const router = Router();
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get('/', authenticate, accountController.getMyAccounts);
+router.get('/me', authenticate, accountController.getMyAccounts);
 
 export default router;

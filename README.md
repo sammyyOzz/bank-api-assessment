@@ -13,6 +13,7 @@ This project follows clean architecture principles and focuses on **maintainabil
 
 This API simulates core banking operations such as **fund transfers**, **withdrawals**, **deposits**, and **account management**.  
 It uses **JWT-based authentication**, **role-based access control (RBAC)**, **Redis caching**, and a **modular folder structure** for clarity and scalability.
+Critical operations that update multiple documents — such as account transfers, withdrawals, and deposits — are executed within MongoDB transactions using **Mongoose sessions** to ensure **ACID** (Atomicity, Consistency, Isolation, Durability) properties and maintain data integrity.
 
 ---
 
@@ -200,6 +201,7 @@ The architecture makes testing straightforward:
 - ⚡ Redis caching layer
 - 📚 Swagger documentation
 - 🚨 Centralized error handling
+- 🔒 Transactions & ACID with Mongoose
 - 🐳 Deployment using Docker
 
 ---
